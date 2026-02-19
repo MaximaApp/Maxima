@@ -5,164 +5,182 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Workout Tracker Elite</title>
+<title>Workout Tracker</title>
 
-<!-- Chart.js library for rendering progress graphs -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
 
-/* ============================================
-   Color theme variables
-   Defines light mode as default
-============================================ */
+/* =========================
+   Professional Color System
+========================= */
 
 :root{
 
---bg:#f1f5f9;
+--bg:#f3f6fb;
 --card:#ffffff;
---text:#020617;
---accent:#3b82f6;
+--primary:#2563eb;
+--text:#0f172a;
+--sub:#64748b;
+--radius:18px;
 
 }
-
-/* ============================================
-   Dark theme color overrides
-============================================ */
 
 [data-theme="dark"]{
 
---bg:#020617;
---card:#0f172a;
---text:#f8fafc;
+--bg:#0b1220;
+--card:#121a2b;
+--text:#f1f5f9;
+--sub:#94a3b8;
 
 }
 
-/* ============================================
-   Base page styling
-============================================ */
+
+/* =========================
+   Base Layout
+========================= */
 
 body{
 
 margin:0;
-font-family:system-ui;
+font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;
 background:var(--bg);
 color:var(--text);
-padding-bottom:70px;
-transition:.25s;
 
 }
 
-/* ============================================
-   Header styling
-============================================ */
+
+/* =========================
+   Header
+========================= */
 
 .header{
 
 padding:20px;
-font-size:24px;
-font-weight:bold;
+font-size:22px;
+font-weight:600;
+
+display:flex;
+justify-content:space-between;
+align-items:center;
 
 }
 
-/* ============================================
-   Card container styling
-============================================ */
+
+/* =========================
+   Cards
+========================= */
 
 .card{
 
 background:var(--card);
-margin:12px;
+margin:16px;
 padding:18px;
-border-radius:16px;
-animation:fade .3s;
+border-radius:var(--radius);
+
+box-shadow:
+0 4px 12px rgba(0,0,0,0.08);
 
 }
 
-/* ============================================
-   Exercise list item styling
-============================================ */
+
+/* =========================
+   Buttons
+========================= */
+
+.button{
+
+background:var(--primary);
+color:white;
+border:none;
+padding:14px;
+border-radius:14px;
+font-size:16px;
+width:100%;
+margin-top:10px;
+cursor:pointer;
+
+transition:.15s;
+
+}
+
+.button:active{
+
+transform:scale(.97);
+
+}
+
+
+/* =========================
+   Exercise Button
+========================= */
 
 .exercise{
 
-padding:14px;
-margin:8px 0;
-background:rgba(59,130,246,.12);
-border-radius:12px;
+padding:16px;
+border-radius:14px;
+background:#eff6ff;
+margin-bottom:10px;
 cursor:pointer;
 
 }
 
-/* ============================================
-   Bottom navigation bar styling
-============================================ */
+
+/* =========================
+   Input
+========================= */
+
+input{
+
+width:100%;
+padding:14px;
+margin-top:10px;
+
+border-radius:14px;
+border:1px solid #ddd;
+
+font-size:16px;
+
+}
+
+
+/* =========================
+   Bottom Navigation
+========================= */
 
 .nav{
 
 position:fixed;
 bottom:0;
 width:100%;
-display:flex;
 background:var(--card);
-border-top:1px solid #ccc;
+
+display:flex;
+
+box-shadow:0 -4px 12px rgba(0,0,0,0.08);
 
 }
-
-/* Navigation buttons */
 
 .nav button{
 
 flex:1;
-padding:15px;
+padding:16px;
+border:none;
 background:none;
-border:none;
-font-size:16px;
-
-}
-
-/* ============================================
-   Fade animation
-============================================ */
-
-@keyframes fade{
-
-from{opacity:0;transform:translateY(10px);}
-to{opacity:1;}
-
-}
-
-/* ============================================
-   Input field styling
-============================================ */
-
-input{
-
-padding:10px;
-margin:5px;
-border-radius:10px;
-border:none;
-background:#e2e8f0;
-
-}
-
-/* ============================================
-   Button styling
-============================================ */
-
-button{
-
+font-size:15px;
 cursor:pointer;
 
 }
 
-/* ============================================
-   Personal record indicator styling
-============================================ */
+
+/* =========================
+   PR Highlight
+========================= */
 
 .pr{
 
-color:#22c55e;
-font-weight:bold;
+color:#16a34a;
+font-weight:600;
 
 }
 
@@ -173,28 +191,21 @@ font-weight:bold;
 <body>
 
 
-<!-- ============================================
-     Header section
-============================================ -->
 
 <div class="header">
 
 Workout Tracker
 
-<!-- Theme selection control -->
+<div>
 
-<select id="theme">
+<select id="themeSelect">
 
-<option value="system">System</option>
 <option value="light">Light</option>
 <option value="dark">Dark</option>
 
 </select>
 
-
-<!-- Unit selection control -->
-
-<select id="unit">
+<select id="unitSelect">
 
 <option value="lbs">lbs</option>
 <option value="kgs">kgs</option>
@@ -203,154 +214,117 @@ Workout Tracker
 
 </div>
 
-
-
-<!-- Main content container -->
-
-<div id="screen"></div>
+</div>
 
 
 
-<!-- ============================================
-     Bottom navigation bar
-============================================ -->
+<div id="app"></div>
+
+
 
 <div class="nav">
 
-<button onclick="go('workout')">Workout</button>
+<button onclick="showWorkout()">Workout</button>
 
-<button onclick="go('progress')">Progress</button>
+<button onclick="showPR()">PRs</button>
 
-<button onclick="go('pr')">PRs</button>
-
-<button onclick="go('settings')">Settings</button>
+<button onclick="showSettings()">Settings</button>
 
 </div>
 
 
 
+
 <script>
 
-/* ============================================
-   Exercise list definition
-   This can be expanded or customized
-============================================ */
+/* =========================
+   Initialize
+========================= */
 
 const exercises=[
 
-"Incline DB Press",
+"Incline Dumbbell Press",
 "Lat Pulldown",
-"Curl",
 "Lateral Raise",
+"Curl",
 "Leg Extension"
 
 ];
 
-
-/* ============================================
-   Navigation state management
-============================================ */
-
-let current="workout";
-
-function go(screen){
-
-current=screen;
-render();
-
-}
+let selectedExercise=null;
 
 
-/* ============================================
-   Theme system initialization
-============================================ */
 
-theme.value=localStorage.theme||"system";
+/* =========================
+   Theme System
+========================= */
 
-theme.onchange=()=>{
+const themeSelect=document.getElementById("themeSelect");
 
-localStorage.theme=theme.value;
-setTheme();
+themeSelect.value=localStorage.theme || "light";
+
+applyTheme();
+
+themeSelect.onchange=()=>{
+
+localStorage.theme=themeSelect.value;
+applyTheme();
 
 };
 
+function applyTheme(){
 
-/* Applies selected theme */
-
-function setTheme(){
-
-if(localStorage.theme=="dark")
-
+if(localStorage.theme==="dark")
 document.body.setAttribute("data-theme","dark");
-
 else
-
 document.body.removeAttribute("data-theme");
 
 }
 
-setTheme();
 
 
-/* ============================================
-   Unit system initialization
-============================================ */
+/* =========================
+   Unit System
+========================= */
 
-unit.value=localStorage.unit||"lbs";
+const unitSelect=document.getElementById("unitSelect");
 
-unit.onchange=()=>{
+unitSelect.value=localStorage.unit || "lbs";
 
-localStorage.unit=unit.value;
-render();
+unitSelect.onchange=()=>{
+
+localStorage.unit=unitSelect.value;
 
 };
 
 
-/* Converts pounds to kilograms if necessary */
 
-function convert(w){
+function convert(weight){
 
-if(localStorage.unit=="kgs")
+if(localStorage.unit==="kgs")
+return (weight/2.205).toFixed(1);
 
-return (w/2.205).toFixed(1);
-
-return w;
+return weight;
 
 }
 
 
 
-/* ============================================
-   Screen rendering controller
-============================================ */
+/* =========================
+   Workout Screen
+========================= */
 
-function render(){
+function showWorkout(){
 
-if(current=="workout") renderWorkout();
-
-if(current=="progress") renderProgress();
-
-if(current=="pr") renderPRscreen();
-
-if(current=="settings") renderSettings();
-
-}
-
-
-
-/* ============================================
-   Workout screen renderer
-============================================ */
-
-function renderWorkout(){
-
-screen.innerHTML="<div class='card'>";
+let html=`<div class="card">`;
 
 exercises.forEach(ex=>{
 
-screen.innerHTML+=`
+html+=`
 
-<div class='exercise' onclick="openExercise('${ex}')">
+<div class="exercise"
+
+onclick="openExercise('${ex}')">
 
 ${ex}
 
@@ -360,48 +334,45 @@ ${ex}
 
 });
 
-screen.innerHTML+="</div>";
+html+=`</div>`;
+
+app.innerHTML=html;
 
 }
 
 
-/* ============================================
-   Exercise view handler
-============================================ */
 
-let selected;
+/* =========================
+   Open Exercise
+========================= */
 
 function openExercise(ex){
 
-selected=ex;
-renderExercise();
+selectedExercise=ex;
 
-}
+const data=getData();
 
 
-/* ============================================
-   Exercise logging interface
-============================================ */
-
-function renderExercise(){
-
-let data=getData();
-
-screen.innerHTML=`
+app.innerHTML=`
 
 <div class="card">
 
-<h2>${selected}</h2>
+<h3>${ex}</h3>
 
-<input id="weight" placeholder="weight">
+<input id="weightInput" placeholder="Weight">
 
-<input id="reps" placeholder="reps">
+<input id="repsInput" placeholder="Reps">
 
-<button onclick="save()">Save</button>
+<button class="button" onclick="saveWorkout()">
+
+Save Workout
+
+</button>
 
 <div id="history"></div>
 
 </div>
+
 
 <div class="card">
 
@@ -418,176 +389,169 @@ renderChart();
 }
 
 
-/* ============================================
-   Saves workout entry to local storage
-============================================ */
 
-function save(){
+/* =========================
+   Save Workout
+========================= */
 
-let weight=weightInput().value;
+function saveWorkout(){
 
-let reps=repsInput().value;
+const weight=document.getElementById("weightInput").value;
 
-let data=getData();
+const reps=document.getElementById("repsInput").value;
+
+const data=getData();
 
 data.push({
 
-weight,
-reps,
+weight:Number(weight),
+reps:Number(reps),
 date:new Date().toLocaleDateString()
 
 });
 
-localStorage[selected]=JSON.stringify(data);
+localStorage[selectedExercise]=JSON.stringify(data);
 
-renderExercise();
+openExercise(selectedExercise);
 
 }
 
 
-/* Input field accessors */
 
-function weightInput(){return weight;}
-
-function repsInput(){return reps;}
-
-
-
-/* ============================================
-   Retrieves stored workout data
-============================================ */
+/* =========================
+   Get Data
+========================= */
 
 function getData(){
 
-return JSON.parse(localStorage[selected]||"[]");
+return JSON.parse(localStorage[selectedExercise]||"[]");
 
 }
 
 
-/* ============================================
-   Displays exercise history
-============================================ */
+
+/* =========================
+   History
+========================= */
 
 function renderHistory(){
 
-let data=getData();
+const data=getData();
 
-let html="";
+let html="<br>";
 
-data.reverse().forEach(d=>{
+data.slice().reverse().forEach(d=>{
 
-html+=`${convert(d.weight)} × ${d.reps}<br>`;
+html+=`
+
+${convert(d.weight)} × ${d.reps}<br>
+
+`;
 
 });
 
-history.innerHTML=html;
+document.getElementById("history").innerHTML=html;
 
 }
 
 
-/* ============================================
-   Chart renderer
-============================================ */
 
-let chart;
+/* =========================
+   Chart
+========================= */
 
 function renderChart(){
 
-let data=getData();
+const data=getData();
 
-let weights=data.map(d=>convert(d.weight));
+const weights=data.map(d=>convert(d.weight));
 
-let dates=data.map(d=>d.date);
+const dates=data.map(d=>d.date);
 
-if(chart) chart.destroy();
+new Chart(
 
-chart=new Chart(chartCanvas(),{
+document.getElementById("chart"),
+
+{
 
 type:"line",
 
 data:{
+
 labels:dates,
-datasets:[{data:weights}]
+
+datasets:[{
+
+data:weights
+
+}]
+
 }
 
 });
 
 }
 
-function chartCanvas(){
-
-return document.getElementById("chart");
-
-}
 
 
-/* ============================================
-   Personal record screen renderer
-============================================ */
+/* =========================
+   PR Screen
+========================= */
 
-function renderPRscreen(){
+function showPR(){
 
-screen.innerHTML="<div class='card'>";
+let html=`<div class="card">`;
 
 exercises.forEach(ex=>{
 
-let data=JSON.parse(localStorage[ex]||"[]");
+const data=
+
+JSON.parse(localStorage[ex]||"[]");
 
 let pr=0;
 
 data.forEach(d=>{
 
-if(d.weight>pr) pr=d.weight;
+if(d.weight>pr)
+pr=d.weight;
 
 });
 
-screen.innerHTML+=`
-
-<div>
+html+=`
 
 ${ex}
 
-<span class='pr'>
+<div class="pr">
 
 ${convert(pr)}
 
-</span>
-
-</div>
+</div><br>
 
 `;
 
 });
 
-screen.innerHTML+="</div>";
+html+=`</div>`;
+
+app.innerHTML=html;
 
 }
 
 
-/* ============================================
-   Progress screen renderer
-============================================ */
 
-function renderProgress(){
+/* =========================
+   Settings
+========================= */
 
-screen.innerHTML="<div class='card'>Progress charts are available inside each exercise.</div>";
+function showSettings(){
 
-}
-
-
-/* ============================================
-   Settings screen renderer
-============================================ */
-
-function renderSettings(){
-
-screen.innerHTML=`
+app.innerHTML=`
 
 <div class="card">
 
-Theme and unit preferences are configured using the controls in the header.
+Your progress saves automatically.
 
-All workout data is saved automatically.
+Select units and theme above.
 
 </div>
 
@@ -596,11 +560,13 @@ All workout data is saved automatically.
 }
 
 
-/* ============================================
-   Application initialization
-============================================ */
 
-render();
+/* =========================
+   Start App
+========================= */
+
+showWorkout();
+
 
 </script>
 
