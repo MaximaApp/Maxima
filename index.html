@@ -101,7 +101,12 @@
         </div>
     </div>
 
-    <div id="view-prs" class="view"><div class="card" id="pr-list"></div></div>
+    <div id="view-milestones" class="view">
+        <div class="card">
+            <h3>Strength Milestones</h3>
+            <div id="milestone-list" style="margin-top: 10px;"></div>
+        </div>
+    </div>
 
     <div id="view-settings" class="view">
         <div class="card">
@@ -125,7 +130,7 @@
     <div class="bottom-nav">
         <div class="nav-item active" onclick="app.switchTab('workout')"><i class="fa-solid fa-dumbbell"></i><span>Workout</span></div>
         <div class="nav-item" onclick="app.switchTab('progress')"><i class="fa-solid fa-chart-line"></i><span>Progress</span></div>
-        <div class="nav-item" onclick="app.switchTab('prs')"><i class="fa-solid fa-trophy"></i><span>PRs</span></div>
+        <div class="nav-item" onclick="app.switchTab('milestones')"><i class="fa-solid fa-trophy"></i><span>Milestones</span></div>
         <div class="nav-item" onclick="app.switchTab('settings')"><i class="fa-solid fa-gear"></i><span>Settings</span></div>
     </div>
 </div>
@@ -232,12 +237,17 @@ const routines = {
 };
 
 const app = {
-    state: { theme: 'light', unit: 'lbs', logs: [], prs: {}, currentSplit: 'custom' },
+    state: { theme: 'light', unit: 'lbs', logs: [], milestones: {}, currentSplit: 'custom' },
     chartInstance: null,
 
     init() {
         const saved = localStorage.getItem('maximaFitnessState');
-        if (saved) this.state = { ...this.state, ...JSON.parse(saved) };
+        if (saved) {
+            const parsed = JSON.parse(saved);
+            // Handle old PR name if it exists in storage
+            if (parsed.prs) { parsed.milestones = parsed.prs; delete parsed.prs; }
+            this.state = { ...this.state, ...parsed };
+        }
         document.documentElement.setAttribute('data-theme', this.state.theme);
         document.getElementById('theme-toggle').checked = (this.state.theme === 'dark');
         document.getElementById('unit-select').value = this.state.unit;
@@ -253,8 +263,9 @@ const app = {
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
         document.getElementById(`view-${tab}`).classList.add('active');
         event.currentTarget.classList.add('active');
-        document.getElementById('header-title').innerText = tab.charAt(0).toUpperCase() + tab.slice(1);
-        if (tab === 'prs') this.renderPRs();
+        const titles = { workout: 'Workout', progress: 'Progress', milestones: 'Strength Milestones', settings: 'Settings' };
+        document.getElementById('header-title').innerText = titles[tab];
+        if (tab === 'milestones') this.renderMilestones();
         if (tab === 'progress') this.setupChartData();
     },
 
@@ -276,11 +287,11 @@ const app = {
         const exercises = routines[this.state.currentSplit][day] || [];
         const container = document.getElementById('workout-list');
         container.innerHTML = exercises.map((ex, i) => {
-            const pr = this.state.prs[ex.name];
+            const record = this.state.milestones[ex.name];
             return `
             <div class="card" id="card-${i}">
                 <div class="ex-title">${ex.name} <span class="completed-badge"><i class="fa-solid fa-circle-check"></i></span></div>
-                <div class="ex-meta">${ex.sets} Sets x ${ex.reps} Reps | PR: ${pr ? pr.weight + this.state.unit : 'None'}</div>
+                <div class="ex-meta">${ex.sets} Sets x ${ex.reps} Reps | Best: ${record ? record.weight + this.state.unit : 'None yet'}</div>
                 <div class="log-area">
                     <div class="input-group">
                         <div class="input-wrapper"><label>Weight</label><input type="number" id="w-${i}"></div>
@@ -298,17 +309,17 @@ const app = {
         if (w === 0 && r === 0) return;
         const date = new Date().toISOString().split('T')[0];
         this.state.logs.push({ date, exercise: name, weight: w, reps: r });
-        if (!this.state.prs[name] || w > this.state.prs[name].weight) {
-            this.state.prs[name] = { weight: w, reps: r, date };
+        if (!this.state.milestones[name] || w > this.state.milestones[name].weight) {
+            this.state.milestones[name] = { weight: w, reps: r, date };
         }
         this.saveState();
         document.getElementById(`card-${i}`).classList.add('completed');
     },
 
-    renderPRs() {
-        const container = document.getElementById('pr-list');
-        const prs = Object.entries(this.state.prs);
-        container.innerHTML = prs.length ? prs.map(([n, d]) => `<div class="pr-item"><strong>${n}</strong><span>${d.weight}${this.state.unit} x ${d.reps}</span></div>`).join('') : '<p>No records yet.</p>';
+    renderMilestones() {
+        const container = document.getElementById('milestone-list');
+        const items = Object.entries(this.state.milestones);
+        container.innerHTML = items.length ? items.map(([n, d]) => `<div class="pr-item"><strong>${n}</strong><span>${d.weight}${this.state.unit} x ${d.reps}</span></div>`).join('') : '<p>No milestones reached yet. Go lift!</p>';
     },
 
     setupChartData() {
@@ -346,7 +357,7 @@ const app = {
     },
 
     clearData() {
-        if(confirm("Reset all data?")) { this.state.logs = []; this.state.prs = {}; this.saveState(); location.reload(); }
+        if(confirm("Reset all data?")) { this.state.logs = []; this.state.milestones = {}; this.saveState(); location.reload(); }
     }
 };
 document.addEventListener('DOMContentLoaded', () => app.init());
