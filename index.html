@@ -92,15 +92,15 @@
 
 <div id="app">
     <div class="header">
-        <h1 id="header-title">Workout</h1>
+        <h1 id="header-title">Maxima - Fitness and Workout Tracker</h1>
     </div>
 
     <div id="view-workout" class="view active">
         <div class="split-selector">
             <select id="split-select" onchange="app.changeSplit()">
                 <option value="custom">Custom Split (Chest/Back/Legs)</option>
-                <option value="ppl">PPL (Push Pull Legs) - Demo</option>
-                <option value="ul">Upper Lower - Demo</option>
+                <option value="ppl">PPL (Push, Pull, Legs)</option>
+                <option value="ul">U/L (Upper, Lower)</option>
             </select>
         </div>
         <div class="split-selector">
@@ -169,48 +169,48 @@
 const routines = {
     custom: {
         "Tuesday": [
-            { name: "Incline DB Press", sets: "3", reps: "8" },
-            { name: "Cable Fly", sets: "3", reps: "8" },
-            { name: "Overhead DB Press", sets: "2", reps: "8" },
-            { name: "Lateral Raise", sets: "2", reps: "8" },
-            { name: "Reverse Cable Crossover", sets: "2", reps: "8" },
-            { name: "Tricep Pushdown", sets: "2", reps: "8" },
-            { name: "EZ Skullcrusher", sets: "2", reps: "8" }
+            { name: "Inclined Dumbbell Press", sets: "3", reps: "6-10" },
+            { name: "Cable Flies", sets: "3", reps: "6-10" },
+            { name: "Overhead Dumbbell Press", sets: "2", reps: "6-10" },
+            { name: "Lateral Raise", sets: "2", reps: "6-8" },
+            { name: "Reverse Cable Crossover", sets: "2", reps: "6-10" },
+            { name: "Tricep Pushdowns", sets: "2", reps: "6-10" },
+            { name: "EZ Bar Skullcrushers", sets: "2", reps: "6-10" }
         ],
         "Wednesday": [
-            { name: "DB Row", sets: "3", reps: "8" },
-            { name: "Lat Pulldown", sets: "3", reps: "8" },
-            { name: "DB Shrug", sets: "3", reps: "8" },
+            { name: "Dumbbell Rows", sets: "2", reps: "6-10" },
+            { name: "Lat Pulldowns", sets: "2", reps: "6-10" },
+            { name: "Dumbbell Shrugs", sets: "2", reps: "6-10" },
             { name: "Pullups", sets: "2", reps: "Failure" },
-            { name: "Bayesian Curl", sets: "3", reps: "8" },
-            { name: "Incline Curl", sets: "3", reps: "8" },
-            { name: "Hammer Curl", sets: "3", reps: "8" }
+            { name: "Bayesian Curls", sets: "3", reps: "6-10" },
+            { name: "Inclined Dumbbell Curls", sets: "3", reps: "6-10" },
+            { name: "Hammer Curls", sets: "2", reps: "6-10" }
         ],
         "Thursday": [
-            { name: "Leg Extension", sets: "3", reps: "8" },
-            { name: "Leg Curl", sets: "3", reps: "8" },
-            { name: "Bulgarian Split Squat", sets: "2", reps: "8" },
-            { name: "Calf Raise", sets: "3", reps: "8" },
-            { name: "Dragon Flag", sets: "2", reps: "Failure" },
-            { name: "Leg Raise", sets: "2", reps: "Failure" }
+            { name: "Leg Extensions", sets: "3", reps: "6-10" },
+            { name: "Leg Curls", sets: "3", reps: "6-10" },
+            { name: "Bulgarian Split Squats", sets: "2", reps: "6-10" },
+            { name: "Calf Raises", sets: "3", reps: "6-10" },
+            { name: "Dragon Flags", sets: "2", reps: "Failure" },
+            { name: "Leg Raises", sets: "2", reps: "Failure" }
         ],
         "Saturday": [
-            { name: "Incline DB Press", sets: "2", reps: "8" },
-            { name: "Cable Fly", sets: "2", reps: "8" },
-            { name: "Overhead Press", sets: "2", reps: "8" },
-            { name: "Cable Lateral Raise", sets: "2", reps: "8" },
-            { name: "Reverse Cable Crossover", sets: "2", reps: "8" },
-            { name: "Overhead Extension", sets: "2", reps: "8" },
-            { name: "Skullcrusher", sets: "2", reps: "8" }
+            { name: "Inclined DB Press", sets: "2", reps: "6-10" },
+            { name: "Cable Flies", sets: "2", reps: "6-10" },
+            { name: "Overhead Dumbbell Press", sets: "2", reps: "6-10" },
+            { name: "Cable Lateral Raises", sets: "2", reps: "6-10" },
+            { name: "Reverse Cable Crossovers", sets: "2", reps: "6-10" },
+            { name: "Overhead Tricep Extensions", sets: "2", reps: "6-10" },
+            { name: "Skullcrushers", sets: "2", reps: "6-10" }
         ],
         "Sunday": [
-            { name: "Barbell Row", sets: "3", reps: "8" },
-            { name: "Lat Pulldown", sets: "3", reps: "8" },
-            { name: "DB Shrug", sets: "3", reps: "8" },
+            { name: "Barbell Row", sets: "3", reps: "6-10" },
+            { name: "Lat Pulldown", sets: "3", reps: "6-10" },
+            { name: "DB Shrug", sets: "3", reps: "6-10" },
             { name: "Pullups", sets: "2", reps: "Failure" },
-            { name: "EZ Curl", sets: "2", reps: "8" },
-            { name: "Incline Curl", sets: "3", reps: "8" },
-            { name: "Reverse Curl", sets: "3", reps: "8" }
+            { name: "EZ Curl", sets: "2", reps: "6-10" },
+            { name: "Incline Curl", sets: "3", reps: "6-10" },
+            { name: "Reverse Curl", sets: "3", reps: "6-10" }
         ]
     },
     ppl: {
