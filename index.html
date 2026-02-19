@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Maxima - Fitness and Workout Tracker</title>
+    <title>Maxima Fitness Tracker</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -37,13 +37,16 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background-color: var(--bg-color); color: var(--text-main); transition: background 0.3s, color 0.3s; padding-bottom: var(--nav-height); }
         
-        /* App Container (Phone constraints on desktop) */
+        /* App Container */
         #app { max-width: 500px; margin: 0 auto; background: var(--bg-color); min-height: 100vh; position: relative; box-shadow: 0 0 20px rgba(0,0,0,0.05); }
         
         /* --- Typography & Header --- */
         h1, h2, h3 { font-weight: 700; letter-spacing: -0.5px; }
-        .header { padding: 30px 20px 15px; position: sticky; top: 0; background: var(--bg-color); z-index: 10; border-bottom: 1px solid var(--border); }
-        .header h1 { font-size: 28px; }
+        .header { padding: 30px 20px 15px; position: sticky; top: 0; background: var(--bg-color); z-index: 10; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; }
+        .logo-box { background: var(--primary-fade); padding: 10px; border-radius: 12px; display: flex; align-items: center; justify-content: center; }
+        .logo-box i { color: var(--primary); font-size: 22px; }
+        .brand-text { font-size: 11px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; }
+        .header h1 { font-size: 24px; line-height: 1.1; }
 
         /* --- Views --- */
         .view { display: none; padding: 20px; animation: fadeIn 0.3s ease; }
@@ -52,7 +55,7 @@
 
         /* --- Components --- */
         .card { background: var(--surface-color); border-radius: var(--radius); padding: 20px; margin-bottom: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); border: 1px solid var(--border); }
-        .ex-title { font-size: 18px; margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center;}
+        .ex-title { font-size: 18px; margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center; font-weight: 600;}
         .ex-meta { font-size: 13px; color: var(--text-muted); margin-bottom: 15px; }
         
         .input-group { display: flex; gap: 10px; margin-bottom: 15px; }
@@ -83,8 +86,6 @@
         .pr-item { display: flex; justify-content: space-between; padding: 15px 0; border-bottom: 1px solid var(--border); }
         .pr-item:last-child { border-bottom: none; }
         .setting-row { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid var(--border); }
-        
-        /* Select Dropdown styling */
         .split-selector { margin-bottom: 20px; }
     </style>
 </head>
@@ -92,15 +93,22 @@
 
 <div id="app">
     <div class="header">
-        <h1 id="header-title">Maxima - Fitness and Workout Tracker</h1>
+        <div class="logo-box">
+            <i class="fa-solid fa-bolt"></i>
+        </div>
+        <div>
+            <div class="brand-text">Maxima Fitness</div>
+            <h1 id="header-title">Workout</h1>
+        </div>
     </div>
 
     <div id="view-workout" class="view active">
         <div class="split-selector">
             <select id="split-select" onchange="app.changeSplit()">
-                <option value="custom">Custom Split (Chest/Back/Legs)</option>
-                <option value="ppl">PPL (Push, Pull, Legs)</option>
-                <option value="ul">U/L (Upper, Lower)</option>
+                <option value="custom">Custom Split</option>
+                <option value="ul_custom">Upper / Lower</option>
+                <option value="fbeod">Full Body EOD</option>
+                <option value="ppl">PPL (Push Pull Legs)</option>
             </select>
         </div>
         <div class="split-selector">
@@ -129,16 +137,16 @@
         <div class="card">
             <div class="setting-row">
                 <span>Dark Mode</span>
-                <input type="checkbox" id="theme-toggle" onchange="app.toggleTheme()">
+                <input type="checkbox" id="theme-toggle" onchange="app.toggleTheme()" style="width: auto;">
             </div>
             <div class="setting-row">
                 <span>Weight Unit</span>
-                <select id="unit-select" style="width:100px; padding:5px;" onchange="app.changeUnit()">
+                <select id="unit-select" style="width:100px; padding:8px; border-radius:8px;" onchange="app.changeUnit()">
                     <option value="lbs">lbs</option>
                     <option value="kg">kg</option>
                 </select>
             </div>
-            <div class="setting-row">
+            <div class="setting-row" style="border-bottom: none;">
                 <button class="btn btn-outline" onclick="app.clearData()">Reset All Data</button>
             </div>
         </div>
@@ -168,59 +176,50 @@
 // --- DATA STRUCTURES ---
 const routines = {
     custom: {
-        "Tuesday": [
-            { name: "Inclined Dumbbell Press", sets: "3", reps: "6-10" },
-            { name: "Cable Flies", sets: "3", reps: "6-10" },
-            { name: "Overhead Dumbbell Press", sets: "2", reps: "6-10" },
-            { name: "Lateral Raise", sets: "2", reps: "6-8" },
-            { name: "Reverse Cable Crossover", sets: "2", reps: "6-10" },
-            { name: "Tricep Pushdowns", sets: "2", reps: "6-10" },
-            { name: "EZ Bar Skullcrushers", sets: "2", reps: "6-10" }
+        "Day 1 (Chest/Shoulders/Triceps)": [
+            { name: "Incline DB Presses", sets: "3", reps: "8" },
+            { name: "Cable Flys", sets: "3", reps: "8" },
+            { name: "Overhead DB Presses", sets: "2", reps: "8" },
+            { name: "Lateral Raises", sets: "2", reps: "8" },
+            { name: "Reverse Cable Crossovers", sets: "2", reps: "8" },
+            { name: "Tricep Pushdowns", sets: "2", reps: "8" },
+            { name: "EZ Skullcrushers", sets: "2", reps: "8" }
         ],
-        "Wednesday": [
-            { name: "Dumbbell Rows", sets: "2", reps: "6-10" },
-            { name: "Lat Pulldowns", sets: "2", reps: "6-10" },
-            { name: "Dumbbell Shrugs", sets: "2", reps: "6-10" },
+        "Day 2 (Back/Biceps)": [
+            { name: "DB Rows", sets: "3", reps: "8" },
+            { name: "Lat Pulldowns", sets: "3", reps: "8" },
+            { name: "DB Shrugs", sets: "3", reps: "8" },
             { name: "Pullups", sets: "2", reps: "Failure" },
-            { name: "Bayesian Curls", sets: "3", reps: "6-10" },
-            { name: "Inclined Dumbbell Curls", sets: "3", reps: "6-10" },
-            { name: "Hammer Curls", sets: "2", reps: "6-10" }
+            { name: "Bayesian Curls", sets: "3", reps: "8" },
+            { name: "Incline Curls", sets: "3", reps: "8" },
+            { name: "Hammer Curls", sets: "3", reps: "8" }
         ],
-        "Thursday": [
-            { name: "Leg Extensions", sets: "3", reps: "6-10" },
-            { name: "Leg Curls", sets: "3", reps: "6-10" },
-            { name: "Bulgarian Split Squats", sets: "2", reps: "6-10" },
-            { name: "Calf Raises", sets: "3", reps: "6-10" },
+        "Day 3 (Legs/Abs)": [
+            { name: "Leg Extensions", sets: "3", reps: "8" },
+            { name: "Leg Curls", sets: "3", reps: "8" },
+            { name: "Bulgarian Split Squats", sets: "2", reps: "8" },
+            { name: "Calf Raises", sets: "3", reps: "8" },
             { name: "Dragon Flags", sets: "2", reps: "Failure" },
             { name: "Leg Raises", sets: "2", reps: "Failure" }
         ],
-        "Saturday": [
-            { name: "Inclined DB Press", sets: "2", reps: "6-10" },
-            { name: "Cable Flies", sets: "2", reps: "6-10" },
-            { name: "Overhead Dumbbell Press", sets: "2", reps: "6-10" },
-            { name: "Cable Lateral Raises", sets: "2", reps: "6-10" },
-            { name: "Reverse Cable Crossovers", sets: "2", reps: "6-10" },
-            { name: "Overhead Tricep Extensions", sets: "2", reps: "6-10" },
-            { name: "Skullcrushers", sets: "2", reps: "6-10" }
+        "Day 4 (Chest/Shoulders/Triceps)": [
+            { name: "Incline DB Presses", sets: "2", reps: "8" },
+            { name: "Cable Flys", sets: "2", reps: "8" },
+            { name: "Overhead Presses", sets: "2", reps: "8" },
+            { name: "Cable Lateral Raises", sets: "2", reps: "8" },
+            { name: "Reverse Cable Crossovers", sets: "2", reps: "8" },
+            { name: "Overhead Extensions", sets: "2", reps: "8" },
+            { name: "Skullcrushers", sets: "2", reps: "8" }
         ],
-        "Sunday": [
-            { name: "Barbell Row", sets: "3", reps: "6-10" },
-            { name: "Lat Pulldown", sets: "3", reps: "6-10" },
-            { name: "DB Shrug", sets: "3", reps: "6-10" },
+        "Day 5 (Back/Biceps)": [
+            { name: "Barbell Rows", sets: "3", reps: "8" },
+            { name: "Lat Pulldowns", sets: "3", reps: "8" },
+            { name: "DB Shrugs", sets: "3", reps: "8" },
             { name: "Pullups", sets: "2", reps: "Failure" },
-            { name: "EZ Curl", sets: "2", reps: "6-10" },
-            { name: "Incline Curl", sets: "3", reps: "6-10" },
-            { name: "Reverse Curl", sets: "3", reps: "6-10" }
+            { name: "EZ Curls", sets: "2", reps: "8" },
+            { name: "Incline Curls", sets: "3", reps: "8" },
+            { name: "Reverse Curls", sets: "3", reps: "8" }
         ]
-    },
-    ppl: {
-        "Push": [ { name: "Bench Press", sets: "3", reps: "8-12" }, { name: "Tricep Dips", sets: "3", reps: "10" } ],
-        "Pull": [ { name: "Deadlift", sets: "3", reps: "5" }, { name: "Bicep Curls", sets: "3", reps: "12" } ],
-        "Legs": [ { name: "Squat", sets: "3", reps: "8" }, { name: "Leg Press", sets: "3", reps: "10" } ]
-    },
-    ul: {
-        "Upper": [ { name: "Bench Press", sets: "3", reps: "8" }, { name: "Barbell Row", sets: "3", reps: "8" } ],
-        "Lower": [ { name: "Squat", sets: "3", reps: "8" }, { name: "RDL", sets: "3", reps: "8" } ]
     },
     ul_custom: {
         "Upper": [
@@ -255,8 +254,12 @@ const routines = {
             { name: "Leg Extensions", sets: "2", reps: "6-10" },
             { name: "Hammer Curls", sets: "2", reps: "6-10" }
         ]
+    },
+    ppl: {
+        "Push": [ { name: "Bench Presses", sets: "3", reps: "8-12" }, { name: "Tricep Dips", sets: "3", reps: "10" } ],
+        "Pull": [ { name: "Deadlifts", sets: "3", reps: "5" }, { name: "Bicep Curls", sets: "3", reps: "12" } ],
+        "Legs": [ { name: "Barbell Squats", sets: "3", reps: "8" }, { name: "Leg Presses", sets: "3", reps: "10" } ]
     }
-
 };
 
 // --- APP LOGIC ---
@@ -264,15 +267,15 @@ const app = {
     state: {
         theme: 'light',
         unit: 'lbs',
-        logs: [], // { date, exercise, weight, reps }
-        prs: {},  // { "Bench Press": { weight, reps, date } }
+        logs: [],
+        prs: {}, 
         currentSplit: 'custom'
     },
     chartInstance: null,
 
     init() {
         // Load State
-        const savedState = localStorage.getItem('workoutAppState');
+        const savedState = localStorage.getItem('maximaFitnessState');
         if (savedState) this.state = { ...this.state, ...JSON.parse(savedState) };
         
         // Apply Settings
@@ -286,7 +289,7 @@ const app = {
     },
 
     saveState() {
-        localStorage.setItem('workoutAppState', JSON.stringify(this.state));
+        localStorage.setItem('maximaFitnessState', JSON.stringify(this.state));
     },
 
     // --- NAVIGATION ---
@@ -316,10 +319,6 @@ const app = {
         const daySelect = document.getElementById('day-select');
         const days = Object.keys(routines[this.state.currentSplit]);
         daySelect.innerHTML = days.map(day => `<option value="${day}">${day}</option>`).join('');
-        
-        // Try to auto-select current day if in custom split
-        const today = new Date().toLocaleDateString('en-US', { weekday: 'long' });
-        if (days.includes(today)) daySelect.value = today;
     },
 
     renderWorkout() {
@@ -405,7 +404,6 @@ const app = {
 
     setupChartData() {
         const select = document.getElementById('chart-ex-select');
-        // Get unique exercises from logs
         const exercises = [...new Set(this.state.logs.map(log => log.exercise))].sort();
         
         if (exercises.length === 0) {
@@ -421,12 +419,14 @@ const app = {
         const selectedEx = document.getElementById('chart-ex-select').value;
         const exLogs = this.state.logs.filter(log => log.exercise === selectedEx).sort((a,b) => new Date(a.date) - new Date(b.date));
         
-        const labels = exLogs.map(log => log.date.slice(5)); // Just MM-DD
+        const labels = exLogs.map(log => log.date.slice(5)); 
         const data = exLogs.map(log => log.weight);
 
         const ctx = document.getElementById('progressChart').getContext('2d');
         if (this.chartInstance) this.chartInstance.destroy();
 
+        const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() || '#007aff';
+        
         this.chartInstance = new Chart(ctx, {
             type: 'line',
             data: {
@@ -434,13 +434,13 @@ const app = {
                 datasets: [{
                     label: `Weight (${this.state.unit})`,
                     data: data,
-                    borderColor: '#007aff',
-                    backgroundColor: 'rgba(0, 122, 255, 0.1)',
+                    borderColor: primaryColor,
+                    backgroundColor: 'rgba(0, 0, 0, 0.05)',
                     borderWidth: 3,
                     tension: 0.3,
                     fill: true,
                     pointBackgroundColor: '#ffffff',
-                    pointBorderColor: '#007aff',
+                    pointBorderColor: primaryColor,
                     pointRadius: 4
                 }]
             },
@@ -467,7 +467,6 @@ const app = {
     changeUnit() {
         const newUnit = document.getElementById('unit-select').value;
         if (this.state.unit !== newUnit) {
-            // Simple conversion logic
             const factor = newUnit === 'kg' ? 0.453592 : 2.20462;
             this.state.logs.forEach(log => log.weight = Math.round(log.weight * factor));
             for (let ex in this.state.prs) {
