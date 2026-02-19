@@ -182,25 +182,25 @@
 // --- DATA STRUCTURES ---
 const routines = {
     custom: {
-        "Day 1 (Chest/Shoulders/Triceps)": [
-            { name: "Incline DB Presses", sets: "3", reps: "8" },
-            { name: "Cable Flys", sets: "3", reps: "8" },
+        "Day 1 (Chest + Shoulders + Triceps)": [
+            { name: "Incline Dumbbell Press", sets: "3", reps: "8" },
+            { name: "Cable Flies", sets: "2", reps: "8" },
             { name: "Overhead DB Presses", sets: "2", reps: "8" },
-            { name: "Lateral Raises", sets: "2", reps: "8" },
+            { name: "Cable Lateral Raises", sets: "2", reps: "8" },
             { name: "Reverse Cable Crossovers", sets: "2", reps: "8" },
             { name: "Tricep Pushdowns", sets: "2", reps: "8" },
-            { name: "EZ Skullcrushers", sets: "2", reps: "8" }
+            { name: "EZ Bar Skullcrushers", sets: "2", reps: "8" }
         ],
-        "Day 2 (Back/Biceps)": [
-            { name: "DB Rows", sets: "3", reps: "8" },
-            { name: "Lat Pulldowns", sets: "3", reps: "8" },
-            { name: "DB Shrugs", sets: "3", reps: "8" },
+        "Day 2 (Back + Biceps)": [
+            { name: "Dumbbell Rows", sets: "2", reps: "8" },
+            { name: "Lat Pulldowns", sets: "2", reps: "8" },
+            { name: "Dumbbell Shrugs", sets: "2", reps: "8" },
             { name: "Pullups", sets: "2", reps: "Failure" },
             { name: "Bayesian Curls", sets: "3", reps: "8" },
-            { name: "Incline Curls", sets: "3", reps: "8" },
+            { name: "Inclined Dumbbell Curls", sets: "3", reps: "8" },
             { name: "Hammer Curls", sets: "3", reps: "8" }
         ],
-        "Day 3 (Legs/Abs)": [
+        "Day 3 (Legs + Abs)": [
             { name: "Leg Extensions", sets: "3", reps: "8" },
             { name: "Leg Curls", sets: "3", reps: "8" },
             { name: "Bulgarian Split Squats", sets: "2", reps: "8" },
@@ -208,57 +208,70 @@ const routines = {
             { name: "Dragon Flags", sets: "2", reps: "Failure" },
             { name: "Leg Raises", sets: "2", reps: "Failure" }
         ],
-        "Day 4 (Chest/Shoulders/Triceps)": [
-            { name: "Incline DB Presses", sets: "2", reps: "8" },
-            { name: "Cable Flys", sets: "2", reps: "8" },
-            { name: "Overhead Presses", sets: "2", reps: "8" },
+        "Day 4 (Chest + Shoulders + Triceps)": [
+            { name: "Inclined Dumbbell Presse", sets: "2", reps: "8" },
+            { name: "Cable Flies", sets: "2", reps: "8" },
+            { name: "Overhead Dumbbell Press", sets: "2", reps: "8" },
             { name: "Cable Lateral Raises", sets: "2", reps: "8" },
             { name: "Reverse Cable Crossovers", sets: "2", reps: "8" },
-            { name: "Overhead Extensions", sets: "2", reps: "8" },
-            { name: "Skullcrushers", sets: "2", reps: "8" }
+            { name: "Overhead Tricep Extensions", sets: "2", reps: "8" },
+            { name: "EZ Bar Skullcrushers", sets: "2", reps: "8" }
         ],
         "Day 5 (Back/Biceps)": [
-            { name: "Barbell Rows", sets: "3", reps: "8" },
-            { name: "Lat Pulldowns", sets: "3", reps: "8" },
-            { name: "DB Shrugs", sets: "3", reps: "8" },
+            { name: "Dumbbell Rows", sets: "2", reps: "8" },
+            { name: "Lat Pulldowns", sets: "2", reps: "8" },
+            { name: "Dumbbell Shrugs", sets: "2", reps: "8" },
             { name: "Pullups", sets: "2", reps: "Failure" },
-            { name: "EZ Curls", sets: "2", reps: "8" },
-            { name: "Incline Curls", sets: "3", reps: "8" },
-            { name: "Reverse Curls", sets: "3", reps: "8" }
+            { name: "EZ Bar Curls", sets: "2", reps: "8" },
+            { name: "Inclined Dumbbell Curls", sets: "2", reps: "8" },
+            { name: "Reverse Curls", sets: "2", reps: "8" }
         ]
     },
     ul_custom: {
         "Upper": [
-            { name: "Bench Presses", sets: "3", reps: "6-10" },
-            { name: "Barbell Rows", sets: "3", reps: "6-10" },
-            { name: "Overhead Presses", sets: "3", reps: "6-10" },
-            { name: "Lat Pulldowns", sets: "3", reps: "6-10" },
-            { name: "Dumbbell Curls", sets: "3", reps: "6-10" },
-            { name: "Tricep Extensions", sets: "3", reps: "6-10" }
+            { name: "Inclined Dumbbell Press", sets: "3", reps: "6-10" },
+            { name: "Overhead Dumbbell Press", sets: "2", reps: "6-10" },
+            { name: "Cable Lateral Raises", sets: "2", reps: "6-10" }
+            { name: "Dumbbell Rows", sets: "2", reps: "6-10" }
+            { name: "Lat Pulldowns", sets: "2", reps: "6-10" },
+            { name: "Bayesian Curls", sets: "2", reps: "6-10" },
+            { name: "Reverse Curls", sets: "2", reps: "6-10" }
+            { name: "Overhead Tricep Extensions", sets: "3", reps: "6-10" }
         ],
         "Lower": [
-            { name: "Barbell Squats", sets: "3", reps: "6-10" },
-            { name: "Romanian Deadlifts", sets: "3", reps: "6-10" },
-            { name: "Leg Presses", sets: "3", reps: "6-10" },
-            { name: "Leg Curls", sets: "3", reps: "6-10" },
-            { name: "Calf Raises", sets: "4", reps: "6-10" },
-            { name: "Hanging Leg Raises", sets: "3", reps: "6-10" }
+            { name: "Barbell Squats", sets: "2", reps: "6-10" },
+            { name: "Romanian Deadlifts", sets: "2", reps: "6-10" },
+            { name: "Leg Extensions", sets: "3", reps: "6-10" },
+            { name: "Leg Curls", sets: "2", reps: "6-10" },
+            { name: "Calf Raises", sets: "2", reps: "6-10" },
+            { name: "Leg Raises", sets: "3", reps: "6-10" }
+            { name: "Dragon Flags", sets: "2", reps: "Failure" }
         ]
     },
     fbeod: {
         "Workout A": [
-            { name: "Barbell Squats", sets: "3", reps: "6-10" },
-            { name: "Bench Presses", sets: "3", reps: "6-10" },
-            { name: "Barbell Rows", sets: "3", reps: "6-10" },
-            { name: "Dumbbell Curls", sets: "2", reps: "6-10" },
-            { name: "Skullcrushers", sets: "2", reps: "6-10" }
+            { name: "Inclined Dumbbell Press", sets: "2", reps: "6-10" },
+            { name: "Cable Flies", sets: "2", reps: "6-10" },
+            { name: "Overhead Dumbbell Press", sets: "2", reps: "6-10" },
+            { name: "Dumbbell Lateral Raises", sets: "2", reps: "6-10" },
+            { name: "Dumbbell Rows", sets: "2", reps: "6-10" },
+            { name: "Lat Pulldowns", sets: "2", reps: "6-10" },
+            { name: "Bayesian Curls", sets: "2", reps: "6-10" },
+            { name: "EZ Bar Skullcrushers", sets: "2", reps: "6-10" },
+            { name: "Leg Extensions", sets: "2", reps: "6-10" },
+            { name: "Barbell Deadlifts", sets: "2", reps: "6-10" },
         ],
         "Workout B": [
-            { name: "Deadlifts", sets: "3", reps: "6-10" },
-            { name: "Overhead Presses", sets: "3", reps: "6-10" },
+            { name: "Inclined Dumbbell Press", sets: "2", reps: "6-10" },
+            { name: "Cable Flies", sets: "2", reps: "6-10" },
+            { name: "Overhead Dumbbell Press", sets: "3", reps: "6-10" },
+            { name: "Reverse Cable Crossovers", sets: "2", reps: "6-10" },
+            { name: "Dumbbell Rows", sets: "2", reps: "6-10" },
             { name: "Lat Pulldowns", sets: "3", reps: "6-10" },
-            { name: "Leg Extensions", sets: "2", reps: "6-10" },
+            { name: "Inclined Dumbbell Curls", sets: "2", reps: "6-10" }
             { name: "Hammer Curls", sets: "2", reps: "6-10" }
+            { name: "Leg Extensions", sets: "2", reps: "6-10" },
+            
         ]
     },
     ppl: {
