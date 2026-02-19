@@ -1,0 +1,15 @@
+{
+  "name": "Maxima Fitness Tracker",
+  "short_name": "Maxima",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#f4f7f6",
+  "theme_color": "#007aff",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/1099/1099672.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
