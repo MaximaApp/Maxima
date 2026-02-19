@@ -1,4 +1,5 @@
-const CACHE_NAME = 'maxima-bolt-v1'; // Change 'v1' to 'v2' next time you update code
+// Change 'v1' to 'v3' (or anything different) to force the phone to update
+const CACHE_NAME = 'maxima-force-update-v3'; 
 const ASSETS = [
   './',
   './index.html',
@@ -6,32 +7,33 @@ const ASSETS = [
   './icon-bolt.png'
 ];
 
-// Install Service Worker and cache assets
 self.addEventListener('install', (event) => {
+  // Force the new service worker to become active immediately
+  self.skipWaiting(); 
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS);
-    })
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
   );
-  self.skipWaiting();
 });
 
-// Activate and remove old caches
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) => {
       return Promise.all(
-        keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))
+        keys.map((key) => {
+          if (key !== CACHE_NAME) {
+            return caches.delete(key); // This kills the soccer ball and old code
+          }
+        })
       );
     })
   );
+  // Take control of all open tabs immediately
+  self.clients.claim(); 
 });
 
-// Fetch strategy: Try network first, fall back to cache
 self.addEventListener('fetch', (event) => {
+  // Network first strategy: try to get the newest code from the web
   event.respondWith(
-    fetch(event.request).catch(() => {
-      return caches.match(event.request);
-    })
+    fetch(event.request).catch(() => caches.match(event.request))
   );
 });
