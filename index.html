@@ -4,7 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Maxima Fitness Tracker</title>
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Maxima">
+    <meta name="theme-color" content="#007aff">
+    
     <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon.png">
+    
     <script>
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js');
@@ -284,7 +292,7 @@ const app = {
         document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
         document.getElementById(`view-${tab}`).classList.add('active');
-        event.currentTarget.classList.add('active');
+        if (event && event.currentTarget) event.currentTarget.classList.add('active');
         const titles = { workout: 'Workout', progress: 'Progress', milestones: 'Strength Milestones', settings: 'Settings' };
         document.getElementById('header-title').innerText = titles[tab];
         if (tab === 'milestones') this.renderMilestones();
@@ -332,7 +340,6 @@ const app = {
         const date = new Date().toISOString().split('T')[0];
         this.state.logs.push({ date, exercise: name, weight: w, reps: r, unit: this.state.unit });
         
-        // Milestone logic: Is this the highest weight, or same weight but more reps?
         const best = this.state.milestones[name];
         if (!best || w > best.weight || (w === best.weight && r > best.reps)) {
             this.state.milestones[name] = { weight: w, reps: r, date, unit: this.state.unit };
@@ -405,20 +412,15 @@ const app = {
         const prevUnit = this.state.unit;
         const newUnit = document.getElementById('unit-select').value;
         if (prevUnit === newUnit) return;
-
         const factor = newUnit === 'kg' ? 0.453592 : 2.20462;
-        
-        // Precise conversion to prevent data drift
         this.state.logs.forEach(l => {
             l.weight = parseFloat((l.weight * factor).toFixed(1));
             l.unit = newUnit;
         });
-        
         for (let m in this.state.milestones) {
             this.state.milestones[m].weight = parseFloat((this.state.milestones[m].weight * factor).toFixed(1));
             this.state.milestones[m].unit = newUnit;
         }
-
         this.state.unit = newUnit;
         this.saveState();
         this.renderWorkout();
