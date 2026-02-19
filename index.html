@@ -22,6 +22,7 @@
             --text-main: #1d1d1f;
             --text-muted: #86868b;
             --primary: #007aff;
+            --secondary: #5856d6;
             --primary-fade: rgba(0, 122, 255, 0.1);
             --success: #34c759;
             --border: #e5e5ea;
@@ -62,7 +63,7 @@
         .bottom-nav { position: fixed; bottom: 0; width: 100%; max-width: 500px; height: var(--nav-height); background: var(--surface-color); border-top: 1px solid var(--border); display: flex; justify-content: space-around; align-items: center; z-index: 100; }
         .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); font-size: 11px; cursor: pointer; flex: 1;}
         .nav-item.active { color: var(--primary); }
-        .chart-container { position: relative; height: 250px; width: 100%; }
+        .chart-container { position: relative; height: 300px; width: 100%; }
         .pr-item { display: flex; justify-content: space-between; padding: 15px 0; border-bottom: 1px solid var(--border); }
         .setting-row { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid var(--border); }
     </style>
@@ -95,7 +96,8 @@
 
     <div id="view-progress" class="view">
         <div class="card">
-            <h3>Strength Progression</h3>
+            <h3>Progress Tracker</h3>
+            <p class="ex-meta">Blue = Weight | Purple = Reps</p>
             <select id="chart-ex-select" onchange="app.renderChart()" style="margin: 15px 0;"></select>
             <div class="chart-container"><canvas id="progressChart"></canvas></div>
         </div>
@@ -230,9 +232,30 @@ const routines = {
         ]
     },
     ppl: {
-        "Push": [ { name: "Bench Presses", sets: "3", reps: "8-12" }, { name: "Tricep Dips", sets: "3", reps: "10" } ],
-        "Pull": [ { name: "Deadlifts", sets: "3", reps: "5" }, { name: "Bicep Curls", sets: "3", reps: "12" } ],
-        "Legs": [ { name: "Barbell Squats", sets: "3", reps: "8" }, { name: "Leg Presses", sets: "3", reps: "10" } ]
+        "Push": [ 
+            { name: "Bench Press", sets: "3", reps: "8-12" }, 
+            { name: "Overhead Press", sets: "3", reps: "8-12" },
+            { name: "Incline Dumbbell Press", sets: "3", reps: "8-12" },
+            { name: "Cable Lateral Raises", sets: "3", reps: "10-15" },
+            { name: "Tricep Pushdowns", sets: "3", reps: "10-15" },
+            { name: "Tricep Dips", sets: "3", reps: "Failure" } 
+        ],
+        "Pull": [ 
+            { name: "Deadlifts", sets: "3", reps: "5-8" }, 
+            { name: "Lat Pulldowns", sets: "3", reps: "8-12" },
+            { name: "Seated Cable Rows", sets: "3", reps: "8-12" },
+            { name: "Face Pulls", sets: "3", reps: "12-15" },
+            { name: "Bicep Curls", sets: "3", reps: "12" },
+            { name: "Hammer Curls", sets: "3", reps: "12" } 
+        ],
+        "Legs": [ 
+            { name: "Barbell Squats", sets: "3", reps: "8-10" }, 
+            { name: "Leg Press", sets: "3", reps: "10-12" },
+            { name: "Romanian Deadlifts", sets: "3", reps: "8-10" },
+            { name: "Leg Curls", sets: "3", reps: "10-12" },
+            { name: "Leg Extensions", sets: "3", reps: "10-12" },
+            { name: "Calf Raises", sets: "3", reps: "15" } 
+        ]
     }
 };
 
@@ -244,7 +267,6 @@ const app = {
         const saved = localStorage.getItem('maximaFitnessState');
         if (saved) {
             const parsed = JSON.parse(saved);
-            // Handle old PR name if it exists in storage
             if (parsed.prs) { parsed.milestones = parsed.prs; delete parsed.prs; }
             this.state = { ...this.state, ...parsed };
         }
@@ -291,10 +313,10 @@ const app = {
             return `
             <div class="card" id="card-${i}">
                 <div class="ex-title">${ex.name} <span class="completed-badge"><i class="fa-solid fa-circle-check"></i></span></div>
-                <div class="ex-meta">${ex.sets} Sets x ${ex.reps} Reps | Best: ${record ? record.weight + this.state.unit : 'None yet'}</div>
+                <div class="ex-meta">${ex.sets} Sets x ${ex.reps} Reps | Best: ${record ? record.weight + this.state.unit + ' x ' + record.reps : 'None yet'}</div>
                 <div class="log-area">
                     <div class="input-group">
-                        <div class="input-wrapper"><label>Weight</label><input type="number" id="w-${i}"></div>
+                        <div class="input-wrapper"><label>Weight (${this.state.unit})</label><input type="number" id="w-${i}"></div>
                         <div class="input-wrapper"><label>Reps</label><input type="number" id="r-${i}"></div>
                     </div>
                     <button class="btn btn-primary" onclick="app.logSet(${i}, '${ex.name}')">Save & Complete</button>
@@ -308,9 +330,12 @@ const app = {
         const r = parseInt(document.getElementById(`r-${i}`).value) || 0;
         if (w === 0 && r === 0) return;
         const date = new Date().toISOString().split('T')[0];
-        this.state.logs.push({ date, exercise: name, weight: w, reps: r });
-        if (!this.state.milestones[name] || w > this.state.milestones[name].weight) {
-            this.state.milestones[name] = { weight: w, reps: r, date };
+        this.state.logs.push({ date, exercise: name, weight: w, reps: r, unit: this.state.unit });
+        
+        // Milestone logic: Is this the highest weight, or same weight but more reps?
+        const best = this.state.milestones[name];
+        if (!best || w > best.weight || (w === best.weight && r > best.reps)) {
+            this.state.milestones[name] = { weight: w, reps: r, date, unit: this.state.unit };
         }
         this.saveState();
         document.getElementById(`card-${i}`).classList.add('completed');
@@ -319,7 +344,7 @@ const app = {
     renderMilestones() {
         const container = document.getElementById('milestone-list');
         const items = Object.entries(this.state.milestones);
-        container.innerHTML = items.length ? items.map(([n, d]) => `<div class="pr-item"><strong>${n}</strong><span>${d.weight}${this.state.unit} x ${d.reps}</span></div>`).join('') : '<p>No milestones reached yet. Go lift!</p>';
+        container.innerHTML = items.length ? items.map(([n, d]) => `<div class="pr-item"><strong>${n}</strong><span>${d.weight}${d.unit} x ${d.reps}</span></div>`).join('') : '<p>No milestones reached yet.</p>';
     },
 
     setupChartData() {
@@ -334,13 +359,39 @@ const app = {
         const data = this.state.logs.filter(l => l.exercise === name);
         const ctx = document.getElementById('progressChart').getContext('2d');
         if (this.chartInstance) this.chartInstance.destroy();
+        
         this.chartInstance = new Chart(ctx, {
             type: 'line',
             data: {
                 labels: data.map(d => d.date.slice(5)),
-                datasets: [{ label: 'Weight', data: data.map(d => d.weight), borderColor: '#007aff', tension: 0.3 }]
+                datasets: [
+                    { 
+                        label: 'Weight', 
+                        data: data.map(d => d.weight), 
+                        borderColor: '#007aff', 
+                        backgroundColor: 'rgba(0, 122, 255, 0.1)',
+                        tension: 0.3,
+                        yAxisID: 'y'
+                    },
+                    { 
+                        label: 'Reps', 
+                        data: data.map(d => d.reps), 
+                        borderColor: '#5856d6', 
+                        backgroundColor: 'transparent',
+                        borderDash: [5, 5],
+                        tension: 0.3,
+                        yAxisID: 'y1'
+                    }
+                ]
             },
-            options: { responsive: true, maintainAspectRatio: false }
+            options: { 
+                responsive: true, 
+                maintainAspectRatio: false,
+                scales: {
+                    y: { type: 'linear', display: true, position: 'left', title: { display: true, text: 'Weight' } },
+                    y1: { type: 'linear', display: true, position: 'right', grid: { drawOnChartArea: false }, title: { display: true, text: 'Reps' } }
+                }
+            }
         });
     },
 
@@ -351,7 +402,24 @@ const app = {
     },
 
     changeUnit() {
-        this.state.unit = document.getElementById('unit-select').value;
+        const prevUnit = this.state.unit;
+        const newUnit = document.getElementById('unit-select').value;
+        if (prevUnit === newUnit) return;
+
+        const factor = newUnit === 'kg' ? 0.453592 : 2.20462;
+        
+        // Precise conversion to prevent data drift
+        this.state.logs.forEach(l => {
+            l.weight = parseFloat((l.weight * factor).toFixed(1));
+            l.unit = newUnit;
+        });
+        
+        for (let m in this.state.milestones) {
+            this.state.milestones[m].weight = parseFloat((this.state.milestones[m].weight * factor).toFixed(1));
+            this.state.milestones[m].unit = newUnit;
+        }
+
+        this.state.unit = newUnit;
         this.saveState();
         this.renderWorkout();
     },
