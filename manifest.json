@@ -2,7 +2,7 @@
   "name": "Maxima Strength Tracker",
   "short_name": "Maxima",
   "description": "Personalized Fitness and Workout Tracker",
-  "start_url": "index.html?v=2",
+  "start_url": "index.html?v=3",
   "display": "standalone",
   "background_color": "#f4f7f6",
   "theme_color": "#007aff",
